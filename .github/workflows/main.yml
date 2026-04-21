@@ -1,0 +1,32 @@
+name: Deploy
+run-name: Deploy
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+  id-token: write
+
+jobs:
+    deploy-container-app:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: eu-west-2
+
+            - name: Authenticate docker client
+              run: |
+                aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 261219435789.dkr.ecr.eu-west-2.amazonaws.com
+
+            - name: Build and push docker image
+              run: |
+                docker build --platform linux/amd64 --push --tag 261219435789.dkr.ecr.eu-west-2.amazonaws.com/etido-tdd-recap:latest .
