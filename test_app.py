@@ -1,9 +1,13 @@
-from hello import hello_world
+import pytest
+
+from app import index
 from duty import Duty
 
 def test_list_exists():
-    duties = hello_world()
+    duties = index()
     assert type(duties) == list
+
+
 
 def test_duty_has_identifier():
     duty = Duty("Duty 1", "Script and code in at least one general purpose language and at least one domain-specific language to orchestrate infrastructure, follow test driven development and ensure appropriate test coverage.")
