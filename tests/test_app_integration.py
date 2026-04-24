@@ -1,5 +1,5 @@
-import controller
-from duty import Duty
+from duties import controller
+from duties.duty import Duty
 
 def test_db_is_called_successfully(mocker):
 
@@ -7,7 +7,7 @@ def test_db_is_called_successfully(mocker):
         "identifier": 1,
         "description": "Script and Code"
     }]
-    mocker.patch("controller.call_database", return_value=mock_data)
+    mocker.patch("duties.controller.call_database", return_value=mock_data)
 
     actual_result = controller.call_database()
 
@@ -18,7 +18,7 @@ def test_db_is_called_successfully(mocker):
 
 
 def test_duties_are_returned(mocker):
-    mocker.patch("controller.get_duties_from_db", return_value=[Duty(1, "Script and Code")])
+    mocker.patch("duties.controller.get_duties_from_db", return_value=[Duty(1, "Script and Code")])
     duties = controller.get_duties_from_db()
     assert isinstance(duties, list)
     for duty in duties:

@@ -1,4 +1,4 @@
-from duty import Duty
+from duties.duty import Duty
 
 def test_duty_has_identifier():
     duty = Duty("Duty 1", "Script and code in at least one general purpose language and at least one domain-specific language to orchestrate infrastructure, follow test driven development and ensure appropriate test coverage.")
