@@ -1,22 +1,30 @@
-import re
+import re, pytest
+from urllib.parse import urlparse
 from app import app
-from playwright.sync_api import sync_playwright, Page, expect
+from playwright.sync_api import Page, expect
 
-client = app.test_client()
+test_app = app.test_client()
+
+@pytest.fixture(autouse=True)
+def mock_request(page):
+    def intercept_request(route):
+        path = urlparse(route.request.url).path
+        response = test_app.get(path)
+        route.fulfill(
+            body=response.data,
+            headers=dict(response.headers),
+            status=response.status_code
+        )
+    page.route("http://127.0.0.1:5000/**", intercept_request)
+    yield
 
 def test_duties_show_on_page():
-    response = client.get('/')
+    response = test_app.get('/')
     assert "Duty 1" in response.text
 
-def test_200_status():
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        response = page.request.get("http://127.0.0.1:5000")
-        assert response.status == 200
-        # This is also acceptable:
-        # response = page.request.get("http://127.0.0.1:5000")
-        # assert response.status == 200
+def test_200_status(page: Page):
+    response = page.goto("http://127.0.0.1:5000")
+    assert response.status == 200
 
 def test_title_is_present_on_page(page: Page):
     page.goto("http://127.0.0.1:5000")
