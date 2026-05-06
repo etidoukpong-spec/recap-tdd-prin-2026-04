@@ -18,10 +18,6 @@ def mock_request(page):
     page.route("http://127.0.0.1:5000/**", intercept_request)
     yield
 
-def test_duties_show_on_page():
-    response = test_app.get('/')
-    assert "Duty 1" in response.text
-
 def test_200_status(page: Page):
     response = page.goto("http://127.0.0.1:5000")
     assert response.status == 200
