@@ -33,3 +33,7 @@ def test_title_is_present_on_page(page: Page):
 def test_heading_is_present_on_page(page: Page):
     page.goto("http://127.0.0.1:5000")
     expect(page.get_by_role("heading", name="Duties")).to_be_visible()
+
+def test_add_duty_button_is_present_on_page(page: Page):
+    page.goto("http://127.0.0.1:5000")
+    expect(page.get_by_role("button", name="Add Duty")).to_be_visible()
