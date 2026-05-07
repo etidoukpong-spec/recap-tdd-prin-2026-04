@@ -1,5 +1,4 @@
-from duties.controller import create_duty
-from duties.duty import Duty
+from duties.duty import Duty, create_duty
 
 # MARK: Test Duty
 

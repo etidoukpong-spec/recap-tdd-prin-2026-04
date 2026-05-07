@@ -17,3 +17,6 @@ class Duty:
         
     def matches(self, identifier, description):
         return self.identifier == identifier and self.description == description
+
+def create_duty(identifier="", description=""):
+    return Duty(identifier, description)
