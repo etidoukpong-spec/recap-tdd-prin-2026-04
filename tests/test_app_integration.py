@@ -1,5 +1,3 @@
-from app import app
-
 from duties import controller
 from duties.duty import Duty
 
@@ -40,3 +38,15 @@ def test_create_function_returns_a_duty_from_form_data(mocker):
     assert duty.identifier == form_data["identifier"]
     assert duty.description == form_data["description"]
 
+def test_new_duty_is_added_to_db(mocker):
+    mock_call = mocker.patch("duties.db.call_database")
+
+    duty = Duty("identifier", "description")
+
+    controller.save_duty_in_db(duty)
+
+    expected_data = {"identifier": "identifier", "description": "description"}
+    mock_call.assert_called_once_with("INSERT", expected_data)
+
+def test_new_duty_is_unique_to_db(mocker):
+    pass

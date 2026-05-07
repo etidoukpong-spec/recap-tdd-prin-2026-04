@@ -10,3 +10,8 @@ def create_duty_from_form(form_data: dict):
 def get_duties_from_db():
     data = db.call_database()
     return [Duty(row["identifier"], row["description"]) for row in data]
+
+def save_duty_in_db(duty):
+    data = {"identifier": duty.identifier, "description": duty.description}
+    db.call_database("INSERT", data)
+
