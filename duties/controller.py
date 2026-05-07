@@ -1,7 +1,7 @@
 from duties.duty import Duty
 
 def create_duty(identifier="", description=""):
-    return Duty("", "")
+    return Duty(identifier, description)
 
 def get_duties_from_db():
     # will turn data into duty objects to use in the app when it exists
