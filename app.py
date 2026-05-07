@@ -1,9 +1,18 @@
-from flask import Flask, render_template
-from duties.controller import get_duties_from_db
+from flask import Flask, render_template, request
+from duties.controller import get_duties_from_db, create_duty_from_form
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    duties = get_duties_from_db()
-    return render_template("index.html", duties=duties)
+    if request.method == "POST":
+        try:
+            duty = create_duty_from_form(request.form)
+            message = f"{duty.identifier} created!"
+        except:
+            message = "Something went wrong"
+            duties = get_duties_from_db()
+            return render_template("index.html", message=message, duties=duties)
+    else:
+        duties = get_duties_from_db()
+        return render_template("index.html", duties=duties)

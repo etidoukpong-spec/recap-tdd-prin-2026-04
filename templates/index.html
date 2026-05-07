@@ -1,19 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Duties</title>
-</head>
-<body>
+  </head>
+
+  <body>
     <header>
-        <h1>Duties</h1>
+      <h1>Duties</h1>
+      {% if message %}
+      <p style="color: red">{{ message }}</p>
+      {% endif %}
     </header>
-    <main><center>
+    <main>
+      <center>
+        {% for duty in duties %}
         <article>
-            <button>Add Duty</button>
+          <h2>{{ duty.identifier }}</h2>
+          <p>{{ duty.description }}</p>
         </article>
-    </center></main>
+        {% endfor %}
+        <form action="" method="post">
+          <label for="identifier"
+            >Name
+            <input id="identifier" type="text" name="identifier" required />
+          </label>
+          <label for="description"
+            >Description
+            <input id="description" type="text" name="description" required />
+          </label>
+          <button>Add Duty</button>
+        </form>
+      </center>
+    </main>
     <footer>My lovely footer</footer>
-</body>
+  </body>
 </html>
