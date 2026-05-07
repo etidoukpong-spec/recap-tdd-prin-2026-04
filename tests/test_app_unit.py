@@ -27,3 +27,9 @@ def test_create_function_returns_a_duty():
     duty = create_duty()
     assert type(duty) == Duty
     
+def test_duty_created_matches_input():
+    identifier = "test identifier"
+    description = "test description"
+    duty = create_duty(identifier, description)
+    assert duty.get_identifier() == identifier
+    assert duty.get_description() == description

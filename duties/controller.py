@@ -1,6 +1,6 @@
 from duties.duty import Duty
 
-def create_duty():
+def create_duty(identifier="", description=""):
     return Duty("", "")
 
 def get_duties_from_db():
