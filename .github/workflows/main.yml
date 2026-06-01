@@ -2,47 +2,79 @@ name: Deploy
 run-name: Deploy
 
 on:
-    push:
-        branches:
-            - main
-    
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: eu-west-2
+  ECR_REPOSITORY: etido-tdd-recap
+  ECS_SERVICE: etido-tdd-service
+  ECS_CLUSTER: etido-tdd-cluster
+  ECS_TASK_DEFINITION: .aws/task-definition.json 
+  CONTAINER_NAME: my-container
+
 jobs:
-    deploy-container-app:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
 
-            - name: Set up Python
-              uses: actions/setup-python@v6
-              with:
-                python-version: '3.13'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-            - name: Install requirements
-              run: pip install -r requirements.txt
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
 
-            - name: Install browser
-              run: playwright install chromium
+      - name: Install requirements
+        run: pip install -r requirements.txt
 
-            - name: Test code
-              run: pytest
+      - name: Install browser
+        run: playwright install chromium
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                aws-region: eu-west-2
-                role-to-assume: arn:aws:iam::261219435789:role/EtidoTddRecapRole
+      - name: Test code
+        run: pytest
 
-            - name: Authenticate docker client
-              run: |
-                aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 261219435789.dkr.ecr.eu-west-2.amazonaws.com
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::261219435789:role/EtidoTddRecapRole
 
-            - name: Build and push docker image
-              run: |
-                docker build --platform linux/amd64 --push --tag 261219435789.dkr.ecr.eu-west-2.amazonaws.com/etido-tdd-recap:latest .
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push docker image
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          IMAGE_TAG: latest
+        run: |
+          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
