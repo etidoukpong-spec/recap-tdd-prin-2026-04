@@ -1,5 +1,5 @@
-from duties import db
-from duties.duty import Duty, create_duty
+from src import db
+from src.duty import Duty, create_duty
 
 def create_duty_from_form(form_data: dict):
     identifier = form_data["identifier"]

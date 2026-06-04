@@ -1,4 +1,4 @@
-from duties.duty import Duty, create_duty
+from src.duty import Duty, create_duty
 
 # MARK: Test Duty
 

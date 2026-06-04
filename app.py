@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from duties.controller import get_duties_from_db, create_duty_from_form, save_duty_in_db
+from src.controller import get_duties_from_db, create_duty_from_form, save_duty_in_db
 
 app = Flask(__name__)
 
