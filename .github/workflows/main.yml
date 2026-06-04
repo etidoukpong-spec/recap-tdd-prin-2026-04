@@ -14,6 +14,7 @@ env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: etido-tdd-recap
   ECS_SERVICE: etido-tdd-recap-363a
+  ECS_CLUSTER: etido-tdd-cluster
   EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/ecsTaskExecutionRole
   INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
 
