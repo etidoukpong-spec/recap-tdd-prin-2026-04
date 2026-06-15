@@ -29,8 +29,8 @@ def test_create_function_returns_a_duty_from_form_data(mocker):
     mocker.patch("src.duty.create_duty", return_value=mock_duty)
 
     form_data = {
-        "identifier": "identifier",
-        "description": "description"
+        "identifier": "duty identifier",
+        "description": "duty description"
     }
 
     duty = controller.create_duty_from_form(form_data)
