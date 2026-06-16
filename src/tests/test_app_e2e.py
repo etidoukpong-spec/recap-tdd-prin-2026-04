@@ -1,6 +1,6 @@
 import re, pytest
 from urllib.parse import urlparse
-from app import app
+from src.app import app
 from playwright.sync_api import Page, expect
 
 test_app = app.test_client()

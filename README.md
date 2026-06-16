@@ -1,0 +1,6 @@
+- pip installation
+- virtual environment
+- containerisation info
+- workflow info
+- .env variables
+- run instructions
