@@ -1,6 +1,7 @@
 class Duty(): 
-    def __init__(self, id=""):
+    def __init__(self, id="", desc=""):
         self.id = id
+        self.desc = desc
 
 def test_duty_object_is_instantiated():
     duty = Duty()
@@ -13,4 +14,3 @@ def test_duty_object_has_an_identifier():
 def test_duty_object_has_a_description():
     duty = Duty()
     assert duty.desc is not None
-    
