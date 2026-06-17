@@ -17,6 +17,8 @@ env:
   ECS_CLUSTER: etido-tdd-cluster-v2
   EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/service-role/ecsTaskExecutionRole
   INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
+  SUBNET_A: subnet-0807955b03900b906
+  SUBNET_B: subnet-08a6f1a939b7feabf
 
 jobs:
   deploy:
@@ -69,4 +71,4 @@ jobs:
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           execution-role-arn: ${{ env.EXECUTION_ROLE_ARN }}
           infrastructure-role-arn: ${{ env.INFRASTRUCTURE_ROLE_ARN }}
-          subnets: '["subnet-0807955b03900b906", "subnet-08a6f1a939b7feabf"]'
+          subnets: ${{ env.SUBNET_A }},${{ env.SUBNET_B}}
