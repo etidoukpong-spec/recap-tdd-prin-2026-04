@@ -14,11 +14,9 @@ env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: etido-tdd-recap
   ECS_SERVICE: etido-tdd-recap-363b
-  ECS_CLUSTER: etido-tdd-cluster
+  ECS_CLUSTER: etido-tdd-cluster-v2
   EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/service-role/ecsTaskExecutionRole
   INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
-  SUBNET_A: subnet-09f654c1ee58a230d
-  SUBNET_B: subnet-0262f9511432f3296
 
 jobs:
   deploy:
@@ -71,4 +69,3 @@ jobs:
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           execution-role-arn: ${{ env.EXECUTION_ROLE_ARN }}
           infrastructure-role-arn: ${{ env.INFRASTRUCTURE_ROLE_ARN }}
-          subnets: ${{ env.SUBNET_A}}, ${{ env.SUBNET_B}}
