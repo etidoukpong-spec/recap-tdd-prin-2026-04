@@ -1,7 +1,8 @@
 class Duty(): 
-    def __init__(self, id="", desc=""):
+    def __init__(self, id="", desc="", coin=""):
         self.id = id
         self.desc = desc
+        self.coin = coin
 
 def test_duty_object_is_instantiated():
     duty = Duty()
