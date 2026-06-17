@@ -5,3 +5,4 @@
 - terraform info
 - .env variables
 - run instructions
+- test instructions
