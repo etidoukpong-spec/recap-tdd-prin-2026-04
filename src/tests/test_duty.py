@@ -14,3 +14,7 @@ def test_duty_object_has_an_identifier():
 def test_duty_object_has_a_description():
     duty = Duty()
     assert duty.desc is not None
+
+def test_duty_belongs_to_a_coin():
+    duty = Duty()
+    assert duty.coin is not None
