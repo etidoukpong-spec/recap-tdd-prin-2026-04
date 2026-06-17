@@ -335,7 +335,10 @@ resource "aws_iam_role" "execution_role" {
       "Sid" : "",
       "Effect" : "Allow",
       "Principal" : {
-        "Service" : "ecs-tasks.amazonaws.com"
+        "Service" : [
+          "ecs-tasks.amazonaws.com", 
+          "ecs.amazonaws.com"
+        ]
       },
       "Action" : "sts:AssumeRole"
     }]
