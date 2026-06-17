@@ -1,5 +1,6 @@
 class Duty(): 
-    pass
+    def __init__(self, id=""):
+        self.id = id
 
 def test_should_instantiate_duty_object():
     duty = Duty()
