@@ -9,3 +9,8 @@ def test_duty_object_is_instantiated():
 def test_duty_object_has_an_identifier():
     duty = Duty()
     assert duty.id is not None
+
+def test_duty_object_has_a_description():
+    duty = Duty()
+    assert duty.desc is not None
+    
