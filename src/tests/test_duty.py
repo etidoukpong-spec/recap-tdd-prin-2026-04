@@ -5,7 +5,8 @@ class Duty():
         self.coin = coin
 
 class DutyRepository():
-    pass
+    def __init__(self):
+        self._database = {}
 
 def test_duty_object_is_instantiated():
     duty = Duty()
@@ -26,3 +27,8 @@ def test_duty_belongs_to_a_coin():
 def test_duty_repository_is_instantiated():
     repository = DutyRepository()
     assert repository is not None
+
+def test_repository_has_dictionary_database_attribute():
+    repository = DutyRepository()
+    assert hasattr(repository, "_database")
+    assert isinstance(repository._database, dict)
