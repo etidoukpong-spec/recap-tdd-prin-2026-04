@@ -2,10 +2,10 @@ class Duty():
     def __init__(self, id=""):
         self.id = id
 
-def test_should_instantiate_duty_object():
+def test_duty_object_is_instantiated():
     duty = Duty()
     assert duty is not None
 
-def test_should_have_an_identifier():
+def test_duty_object_has_an_identifier():
     duty = Duty()
     assert duty.id is not None
