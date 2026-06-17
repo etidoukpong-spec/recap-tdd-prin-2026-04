@@ -2,5 +2,6 @@
 - virtual environment
 - containerisation info
 - workflow info
+- terraform info
 - .env variables
 - run instructions
