@@ -69,3 +69,4 @@ jobs:
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           execution-role-arn: ${{ env.EXECUTION_ROLE_ARN }}
           infrastructure-role-arn: ${{ env.INFRASTRUCTURE_ROLE_ARN }}
+          subnets: '["subnet-0807955b03900b906", "subnet-08a6f1a939b7feabf"]'
