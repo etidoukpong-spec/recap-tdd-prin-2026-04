@@ -13,7 +13,7 @@ permissions:
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: etido-tdd-recap
-  ECS_SERVICE: etido-tdd-recap-363a
+  ECS_SERVICE: etido-tdd-recap-363b
   ECS_CLUSTER: etido-tdd-cluster
   EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/service-role/ecsTaskExecutionRole
   INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
