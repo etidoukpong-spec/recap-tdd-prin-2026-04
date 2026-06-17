@@ -4,6 +4,9 @@ class Duty():
         self.desc = desc
         self.coin = coin
 
+class DutyRepository():
+    pass
+
 def test_duty_object_is_instantiated():
     duty = Duty()
     assert duty is not None
@@ -19,3 +22,7 @@ def test_duty_object_has_a_description():
 def test_duty_belongs_to_a_coin():
     duty = Duty()
     assert duty.coin is not None
+
+def test_duty_repository_is_instantiated():
+    repository = DutyRepository()
+    assert repository is not None
