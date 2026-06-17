@@ -7,5 +7,5 @@ resource "aws_ecr_repository" "app_repo" {
 }
 
 resource "aws_ecs_cluster" "app_cluster" {
-  name = "etido-tdd-cluster"
+  name = "etido-tdd-cluster-v2"
 }
