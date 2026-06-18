@@ -8,6 +8,9 @@ class DutyRepository():
     def __init__(self):
         self._database = {}
 
+    def add(self):
+        pass
+
 def test_duty_object_is_instantiated():
     duty = Duty()
     assert duty is not None
@@ -32,3 +35,7 @@ def test_repository_has_dictionary_database_attribute():
     repository = DutyRepository()
     assert hasattr(repository, "_database")
     assert isinstance(repository._database, dict)
+
+def test_repository_can_add_duty():
+    repository = DutyRepository()
+    assert repository.add() is None
