@@ -13,5 +13,8 @@ class DutyRepository:
     def __init__(self):
         self._database = {}
 
-    def add(self):
+    def add(self, duty):
+        pass
+
+    def read(self, duty_id):
         pass

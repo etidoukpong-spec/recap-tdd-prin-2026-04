@@ -26,15 +26,22 @@ class TestDutyObject:
             Duty(id="Duty 5", desc="", coin="Automate")
 
 class TestDutyRepository:
+    def setup_method(self):
+        self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
+        self.repository = DutyRepository()
+
+    def teardown_method(self):
+        self.repository._database.clear()
+
     def test_duty_repository_is_instantiated(self):
-        repository = DutyRepository()
-        assert repository is not None
+        assert self.repository is not None
 
     def test_repository_has_dictionary_database_attribute(self):
-        repository = DutyRepository()
-        assert hasattr(repository, "_database")
-        assert isinstance(repository._database, dict)
+        assert hasattr(self.repository, "_database")
+        assert isinstance(self.repository._database, dict)
 
     def test_repository_can_add_duty(self):
-        repository = DutyRepository()
-        assert repository.add() is None
+        assert self.repository.add(self.duty) is None
+
+    def test_repository_can_read_duty(self):
+        assert self.repository.read(self.duty.id) is None
