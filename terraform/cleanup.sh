@@ -6,7 +6,7 @@ SERVICE_EXISTS=$(aws ecs list-services --cluster etido-tdd-cluster-v2 --region e
 if [ -n "$SERVICE_EXISTS" ] && [ "$SERVICE_EXISTS" != "None" ]; then
     echo "Found stale service. Forcing deletion..."
 
-    aws ecs delete-express-gateway-service --cluster etido-tdd-cluster-v2 --service etido-tdd-recap-363b --force --region eu-west-2
+    aws ecs delete-express-gateway-service --service-arn "$SERVICE_EXISTS" --region eu-west-2
 
     echo "Waiting for Express service to turn INACTIVE..."
 
