@@ -15,7 +15,7 @@ env:
   ECR_REPOSITORY: etido-tdd-recap
   ECS_SERVICE: etido-tdd-recap-363b
   ECS_CLUSTER: etido-tdd-cluster-v2
-  EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/service-role/ecsTaskExecutionRole
+  EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/ecsTaskExecutionRole
   INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
   SUBNET_A: subnet-0807955b03900b906
   SUBNET_B: subnet-08a6f1a939b7feabf
