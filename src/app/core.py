@@ -14,7 +14,7 @@ class DutyRepository:
         self._database = {}
 
     def add(self, duty):
-        pass
+        self._database[duty.id] = duty
 
     def read(self, duty_id):
-        pass
+        return self._database.get(duty_id)

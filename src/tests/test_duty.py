@@ -30,9 +30,6 @@ class TestDutyRepository:
         self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
         self.repository = DutyRepository()
 
-    def teardown_method(self):
-        self.repository._database.clear()
-
     def test_duty_repository_is_instantiated(self):
         assert self.repository is not None
 
@@ -45,3 +42,8 @@ class TestDutyRepository:
 
     def test_repository_can_read_duty(self):
         assert self.repository.read(self.duty.id) is None
+
+    def test_repository_stores_added_duty_in_database(self):  
+        self.repository.add(self.duty)
+        
+        assert self.repository.read(self.duty.id) == self.duty
