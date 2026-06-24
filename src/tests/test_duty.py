@@ -64,10 +64,24 @@ class TestDutyRepository:
     def test_db_client_exists(self):
         assert self.db_client is not None
 
-    def test_database_client_has_execute_method(self):
-        assert hasattr(self.db_client, "execute")
+    def test_database_client_has_save_method(self):
+        assert hasattr(self.db_client, "save")
 
     def test_repository_calls_database_client_on_add(self, mocker):
-        mock_execute = mocker.patch("app.core.DatabaseClient.execute")
+        mock_execute = mocker.patch("app.core.DatabaseClient.save")
+
         self.repository.add(self.duty)
+
         mock_execute.assert_called_once()
+
+    def test_repository_passes_payload_to_client(self, mocker):
+        mock_execute = mocker.patch("app.core.DatabaseClient.save")
+        
+        self.repository.add(self.duty)
+        
+        expected_payload = {
+            "id": "Duty 5",
+            "desc": "Build and operate",
+            "coin": "Automate"
+        }
+        mock_execute.assert_called_once_with(expected_payload)
