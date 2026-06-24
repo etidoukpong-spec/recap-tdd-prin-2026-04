@@ -23,5 +23,12 @@ class DutyRepository:
             raise ValueError("Duty with this name already exists")
         self._database[duty.id] = duty
 
+        client = DatabaseClient()
+        client.execute()
+
     def read(self, duty_id):
         return self._database.get(duty_id)
+    
+class DatabaseClient:
+    def execute(self):
+        pass

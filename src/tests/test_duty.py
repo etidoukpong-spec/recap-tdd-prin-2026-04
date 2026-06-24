@@ -1,5 +1,5 @@
 import pytest
-from app.core import Duty, DutyRepository
+from app.core import DatabaseClient, Duty, DutyRepository
 
 class TestDutyObject:
     def setup_method(self):
@@ -33,6 +33,7 @@ class TestDutyRepository:
     def setup_method(self):
         self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
         self.repository = DutyRepository()
+        self.db_client = DatabaseClient()
 
     def test_duty_repository_is_instantiated(self):
         assert self.repository is not None
@@ -59,3 +60,14 @@ class TestDutyRepository:
 
         with pytest.raises(ValueError, match="Duty with this name already exists"):
             self.repository.add(duty2)
+
+    def test_db_client_exists(self):
+        assert self.db_client is not None
+
+    def test_database_client_has_execute_method(self):
+        assert hasattr(self.db_client, "execute")
+
+    def test_repository_calls_database_client_on_add(self, mocker):
+        mock_execute = mocker.patch("app.core.DatabaseClient.execute")
+        self.repository.add(self.duty)
+        mock_execute.assert_called_once()
