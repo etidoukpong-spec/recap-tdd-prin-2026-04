@@ -29,8 +29,15 @@ class DutyRepository:
         client.save(payload)
 
     def read(self, duty_id):
-        return self._database.get(duty_id)
+        client = DatabaseClient()
+        row = client.fetch(duty_id)
+        if row == None:
+            return self._database.get(duty_id)
+        duty = Duty(id=row["id"], desc=row["desc"], coin=row["coin"])
+        return duty
     
 class DatabaseClient:
     def save(self, payload):
+        pass
+    def fetch(self, id):
         pass

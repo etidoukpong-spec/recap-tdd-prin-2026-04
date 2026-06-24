@@ -34,6 +34,11 @@ class TestDutyRepository:
         self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
         self.repository = DutyRepository()
         self.db_client = DatabaseClient()
+        self.mock_row = {
+            "id": "Duty 7", 
+            "desc": "Provision cloud infrastructure", 
+            "coin": "Automate"
+        }
 
     def test_duty_repository_is_instantiated(self):
         assert self.repository is not None
@@ -85,3 +90,22 @@ class TestDutyRepository:
             "coin": "Automate"
         }
         mock_execute.assert_called_once_with(expected_payload)
+
+    def test_database_client_has_fetch_method(self):
+        assert hasattr(self.db_client, "fetch")
+
+    def test_repository_calls_database_client_on_read(self, mocker):
+        mock_execute = mocker.patch("app.core.DatabaseClient.fetch", return_value=self.mock_row)
+
+        self.repository.read("Duty 7")
+
+        mock_execute.assert_called_once()
+
+    def test_repository_reads_and_hydrates_data_from_database_client(self, mocker):                
+        mocker.patch("app.core.DatabaseClient.fetch", return_value=self.mock_row)
+        
+        duty = self.repository.read("Duty 7")
+
+        assert isinstance(duty, Duty)
+        assert duty.id == "Duty 7"
+        assert duty.desc == "Provision cloud infrastructure"
