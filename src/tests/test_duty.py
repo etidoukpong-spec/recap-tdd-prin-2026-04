@@ -47,3 +47,11 @@ class TestDutyRepository:
         self.repository.add(self.duty)
         
         assert self.repository.read(self.duty.id) == self.duty
+
+    def test_repository_prevents_adding_duties_with_duplicate_ids(self):
+        duty2 = Duty(id="Duty 5", desc="Provision cloud infrastructure", coin="Automate")
+
+        self.repository.add(self.duty)
+
+        with pytest.raises(ValueError, match="Duty with this name already exists"):
+            self.repository.add(duty2)

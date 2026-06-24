@@ -14,6 +14,8 @@ class DutyRepository:
         self._database = {}
 
     def add(self, duty):
+        if self.read(duty.id) is not None:
+            raise ValueError("Duty with this name already exists")
         self._database[duty.id] = duty
 
     def read(self, duty_id):
