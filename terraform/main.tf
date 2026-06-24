@@ -6,3 +6,7 @@
 
 provider "aws" {
 }
+
+resource "aws_s3_bucket" "state_bucket" {
+  bucket = "etido-tdd-tf-state"
+}

@@ -7,4 +7,10 @@ terraform {
   }
 
   required_version = ">= 1.2"
+
+  backend "s3" {
+    bucket = "etido-tdd-tf-state"
+    key    = "ecs-express/terraform.tfstate"
+    region = "eu-west-2"
+  }
 }
