@@ -16,9 +16,7 @@ env:
   ECS_SERVICE: etido-tdd-recap-363b
   ECS_CLUSTER: etido-tdd-cluster-v2
   EXECUTION_ROLE_ARN: arn:aws:iam::261219435789:role/ecsTaskExecutionRole
-  INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices
-  SUBNET_A: subnet-0807955b03900b906
-  SUBNET_B: subnet-08a6f1a939b7feabf
+  INFRASTRUCTURE_ROLE_ARN: arn:aws:iam::261219435789:role/ecsInfrastructureRoleForExpressServices 
 
 jobs:
   deploy:
@@ -48,6 +46,20 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::261219435789:role/EtidoTddRecapRole
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init and Apply
+        id: tf
+        working-directory: ./terraform
+        run: |
+          terraform init
+          terraform apply -auto-approve
+          echo "SUBNET_A=$(terraform output -raw subnet_a_id)" >> $GITHUB_ENV
+          echo "SUBNET_B=$(terraform output -raw subnet_b_id)" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
         id: login-ecr
