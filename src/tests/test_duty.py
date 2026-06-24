@@ -25,6 +25,10 @@ class TestDutyObject:
         with pytest.raises(ValueError, match="Description cannot be blank"):
             Duty(id="Duty 5", desc="", coin="Automate")
 
+    def test_cannot_create_duty_unassigned_to_automate_coin(self):
+        with pytest.raises(ValueError, match="Duty is not assigned to the Automate coin"):
+            Duty(id="Duty 1", desc="Script and code in a general purpose language")
+
 class TestDutyRepository:
     def setup_method(self):
         self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
