@@ -32,6 +32,8 @@ class TestDutyObject:
 class TestDutyRepository:
     def setup_method(self):
         self.duty = Duty(id="Duty 5", desc="Build and operate", coin="Automate")
+        self.duty_2 = Duty(id="Duty 7", desc="Provision cloud infrastructure", coin="Automate")
+        self.duplicate_duty = Duty(id="Duty 5", desc="Provision cloud infrastructure", coin="Automate")
         self.repository = DutyRepository()
         self.db_client = DatabaseClient()
         self.mock_row = {
@@ -58,13 +60,22 @@ class TestDutyRepository:
         
         assert self.repository.read(self.duty.id) == self.duty
 
-    def test_repository_prevents_adding_duties_with_duplicate_ids(self):
-        duty2 = Duty(id="Duty 5", desc="Provision cloud infrastructure", coin="Automate")
+    def test_repository_can_read_all_values_in_database(self):
+        repository = DutyRepository()
+        repository.add(self.duty)
+        repository.add(self.duty_2)
 
+        values = repository.read_all()
+
+        assert isinstance(values, list)
+        assert isinstance(values[0], Duty)
+        assert len(values) == 2
+
+    def test_repository_prevents_adding_duties_with_duplicate_ids(self):
         self.repository.add(self.duty)
 
         with pytest.raises(ValueError, match="Duty with this name already exists"):
-            self.repository.add(duty2)
+            self.repository.add(self.duplicate_duty)
 
     def test_db_client_exists(self):
         assert self.db_client is not None

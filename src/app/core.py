@@ -1,7 +1,7 @@
 class Duty: 
     ALLOWED_AUTOMATE_DUTIES = ["Duty 5", "Duty 7", "Duty 10"]
 
-    def __init__(self, id="", desc="", coin=""):
+    def __init__(self, id="", desc="", coin="Automate"):
         if not id:
             raise ValueError("Name cannot be blank")
         if not desc:
@@ -13,6 +13,10 @@ class Duty:
         self.id = id
         self.desc = desc
         self.coin = coin
+
+    @classmethod
+    def get_options(cls):
+        return cls.ALLOWED_AUTOMATE_DUTIES
 
 class DutyRepository:
     def __init__(self):
@@ -35,6 +39,9 @@ class DutyRepository:
             return self._database.get(duty_id)
         duty = Duty(id=row["id"], desc=row["desc"], coin=row["coin"])
         return duty
+    
+    def read_all(self):
+        return list(self._database.values())
     
 class DatabaseClient:
     def save(self, payload):
