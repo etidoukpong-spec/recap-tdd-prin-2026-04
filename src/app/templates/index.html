@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
+    <title>Duty App</title>
+</head>
+<body>
+    <h1>Automate Coin Duties</h1>
+    <div class="dashboard-grid">
+        <section>
+            <form action="/" method="POST">
+                <label for="identifier">Name:
+                    <select id="identifier" name="duty_id">
+                        <option value="">&mdash;</option>
+                        {% for id in options %}
+                        <option>{{ id }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label for="description">Description:
+                    <textarea id="description" name="description" rows="4" cols="50"></textarea>
+                </label>
+                <button type="submit">Add Duty</button>
+            </form>
+        </section>
+
+        <section>
+            {% if duties %}
+            <table id="registered-inventory">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Coin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for duty in duties %}
+                    <tr>
+                        <td>{{ duty.id }}</td>
+                        <td>{{ duty.desc }}</td>
+                        <td>{{ duty.coin }}</td>
+                    </tr> 
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No duties to display.</p>
+            {% endif %}
+        </section>
+    </div>
+    
+</body>
+</html>
