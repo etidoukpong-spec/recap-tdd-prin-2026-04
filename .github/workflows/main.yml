@@ -46,6 +46,13 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::261219435789:role/EtidoTddRecapRole
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run Bootstrap
+        run: |
+          chmod +x ./src/scripts/bootstrap.sh
+          ./src/scripts/bootstrap.sh
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

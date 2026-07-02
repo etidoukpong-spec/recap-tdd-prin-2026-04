@@ -1,5 +1,5 @@
 import pytest
-from app.core import DatabaseClient, Duty, DutyRepository
+from src.app.core import DatabaseClient, Duty, DutyRepository
 
 class TestDutyObject:
     def setup_method(self):
@@ -84,14 +84,14 @@ class TestDutyRepository:
         assert hasattr(self.db_client, "save")
 
     def test_repository_calls_database_client_on_add(self, mocker):
-        mock_execute = mocker.patch("app.core.DatabaseClient.save")
+        mock_execute = mocker.patch("src.app.core.DatabaseClient.save")
 
         self.repository.add(self.duty)
 
         mock_execute.assert_called_once()
 
     def test_repository_passes_payload_to_client(self, mocker):
-        mock_execute = mocker.patch("app.core.DatabaseClient.save")
+        mock_execute = mocker.patch("src.app.core.DatabaseClient.save")
         
         self.repository.add(self.duty)
         
@@ -106,14 +106,14 @@ class TestDutyRepository:
         assert hasattr(self.db_client, "fetch")
 
     def test_repository_calls_database_client_on_read(self, mocker):
-        mock_execute = mocker.patch("app.core.DatabaseClient.fetch", return_value=self.mock_row)
+        mock_execute = mocker.patch("src.app.core.DatabaseClient.fetch", return_value=self.mock_row)
 
         self.repository.read("Duty 7")
 
         mock_execute.assert_called_once()
 
     def test_repository_reads_and_hydrates_data_from_database_client(self, mocker):                
-        mocker.patch("app.core.DatabaseClient.fetch", return_value=self.mock_row)
+        mocker.patch("src.app.core.DatabaseClient.fetch", return_value=self.mock_row)
         
         duty = self.repository.read("Duty 7")
 
