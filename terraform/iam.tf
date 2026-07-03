@@ -336,11 +336,19 @@ resource "aws_iam_role" "execution_role" {
       "Effect" : "Allow",
       "Principal" : {
         "Service" : [
-          "ecs-tasks.amazonaws.com", 
+          "ecs-tasks.amazonaws.com",
           "ecs.amazonaws.com"
         ]
       },
       "Action" : "sts:AssumeRole"
+      "Condition" : {
+        "ArnLike" : {
+          "aws:SourceArn" : "arn:aws:ecs:eu-west-2:261219435789:*"
+        },
+        "StringEquals" : {
+          "aws:SourceAccount" : "261219435789"
+        }
+      }
     }]
   })
 }
