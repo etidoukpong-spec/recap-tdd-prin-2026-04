@@ -9,7 +9,12 @@
 <body>
     <h1>Automate Coin Duties</h1>
     <div class="dashboard-grid">
-        <section>
+        <section class="{% if error_message %}form-group--error{% endif %}">
+            {% if error_message %}
+            <span class="error-message" role="alert" aria-live="assertive">
+                <span class="visually-hidden">Error:</span> {{ error_message }}
+            </span>
+            {% endif %}
             <form action="/" method="POST">
                 <label for="identifier">Name:
                     <select id="identifier" name="duty_id">
