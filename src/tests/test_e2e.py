@@ -42,3 +42,40 @@ def test_user_can_register_and_view_duties(page: Page):
     expect(inventory_table).to_contain_text("Duty 5")
     expect(inventory_table).to_contain_text("Build and operate automation pipelines")
     expect(inventory_table).to_contain_text("Automate")
+
+def test_blank_name_shows_graceful_error(page: Page):
+    page.goto("http://localhost:5000/")
+    
+    page.select_option("select[name='duty_id']", value="") 
+    page.fill("textarea[name='description']", "Donec eget pulvinar")
+    page.click("button[type='submit']")
+    
+    error_text = page.locator(".error-message")
+    expect(error_text).to_be_visible()
+    expect(error_text).to_contain_text("Name cannot be blank")
+
+def test_blank_description_shows_graceful_error(page: Page):
+    page.goto("http://localhost:5000/")
+    
+    page.select_option("select[name='duty_id']", value="Duty 5")
+    page.fill("textarea[name='description']", "") 
+    page.click("button[type='submit']")
+    
+    error_alert = page.locator("[role='alert']")
+    expect(error_alert).to_be_visible()
+    expect(error_alert).to_contain_text("Description cannot be blank")
+
+def test_duplicate_duty_shows_graceful_error(page: Page):
+    page.goto("http://localhost:5000/")
+    
+    page.select_option("select[name='duty_id']", value="Duty 7")
+    page.fill("textarea[name='description']", "Lorem ipsum dolor")
+    page.click("button[type='submit']")
+    
+    page.select_option("select[name='duty_id']", value="Duty 7")
+    page.fill("textarea[name='description']", "Orci varius natoque")
+    page.click("button[type='submit']")
+    
+    error_text = page.locator(".error-message")
+    expect(error_text).to_be_visible()
+    expect(error_text).to_contain_text("Duty with this name already exists")

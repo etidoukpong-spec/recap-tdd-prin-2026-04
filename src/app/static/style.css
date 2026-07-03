@@ -10,6 +10,8 @@
     --action-primary: #0a2540;     /* Primary button default */
     --action-hover: #001020;       /* Primary button dynamic state */
     --utility-highlight: #ffdd00;  /* Accessibility focus ring */
+    --feedback-error-line: #00a3c4; /* Prominent left border accent */
+    --feedback-error-text: #007a99; /* High-contrast accessible text */
 }
 
 /* Base resets & typography */
@@ -143,4 +145,39 @@ p {
     font-size: 1.15rem;
     color: var(--core-muted);
     margin-top: 0;
+}
+
+/* ==========================================================================
+    Alert System
+   ========================================================================== */
+
+/* ==========================================================================
+   Streamlined GDS Error Pattern
+   ========================================================================== */
+
+/* Triggers the 5px GDS left-border on the parent section */
+.form-group--error {
+    padding-left: 15px;
+    border-left: 5px solid var(--feedback-error-line);
+}
+
+/* Bold, accessible inline error heading */
+.error-message {
+    font-weight: 700;
+    font-size: 1.1875rem;
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--feedback-error-text);
+}
+
+/* Screen-reader utility prefix */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
