@@ -63,14 +63,24 @@ jobs:
           AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
         run: |
           echo "=== 1. CHECKING ENVIRONMENT VARIABLES ==="
-          echo "AWS_ACCESS_KEY_ID is set to a string of length: ${#AWS_ACCESS_KEY_ID}"
-          echo "AWS_SECRET_ACCESS_KEY is set to a string of length: ${#AWS_SECRET_ACCESS_KEY}"
-          echo "Lingering AWS_SESSION_TOKEN? [ -n "$AWS_SESSION_TOKEN" ] && echo "Yes (Length: ${#AWS_SESSION_TOKEN})" || echo "No""
-          echo "Lingering AWS_ROLE_ARN? [ -n "$AWS_ROLE_ARN" ] && echo "Yes" || echo "No""
+          echo "AWS_ACCESS_KEY_ID length: ${#AWS_ACCESS_KEY_ID}"
+          echo "AWS_SECRET_ACCESS_KEY length: ${#AWS_SECRET_ACCESS_KEY}"
+          
+          if [ -n "$AWS_SESSION_TOKEN" ]; then
+            echo "Lingering AWS_SESSION_TOKEN: Yes (Length: ${#AWS_SESSION_TOKEN})"
+          else
+            echo "Lingering AWS_SESSION_TOKEN: No"
+          fi
+
+          if [ -n "$AWS_ROLE_ARN" ]; then
+            echo "Lingering AWS_ROLE_ARN: Yes"
+          else
+            echo "Lingering AWS_ROLE_ARN: No"
+          fi
           
           echo "=== 2. AWS CLI CREDENTIAL ORIGIN LOOKUP ==="
           aws configure list || echo "Could not run aws configure list"
-
+          
           echo "=== 3. VERBOSE API CALL WITH DEBUG LOGS ==="
           aws sts get-caller-identity --debug
 
