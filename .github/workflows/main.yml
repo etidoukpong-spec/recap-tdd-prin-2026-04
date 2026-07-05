@@ -42,6 +42,7 @@ jobs:
         run: pytest
 
       - name: Configure AWS credentials
+        id: oidc_auth
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
