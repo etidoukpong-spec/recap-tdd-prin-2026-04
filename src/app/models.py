@@ -28,7 +28,7 @@ class Duty(BaseModel):
 class Coin(BaseModel):
     coin_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     coin_name = CharField(unique=True)
-    is_complete = BooleanField()
+    is_complete = BooleanField(default=False)
 
     class Meta:
         schema = 'coins'
