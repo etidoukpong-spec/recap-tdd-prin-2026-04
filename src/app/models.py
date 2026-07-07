@@ -1,6 +1,6 @@
 import uuid
 from peewee import *
-from config import DB_CONFIG
+from src.app.config import DB_CONFIG
 
 db = PostgresqlDatabase(**DB_CONFIG)
 
@@ -24,5 +24,3 @@ class Junction(BaseModel):
     junction_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     duty_id = ForeignKeyField(DutyModel, on_delete="CASCADE")
     coin_id = ForeignKeyField(CoinModel, on_delete="CASCADE")
-
-db.create_tables([DutyModel, CoinModel, Junction])
