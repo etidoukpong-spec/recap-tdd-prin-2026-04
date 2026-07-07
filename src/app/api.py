@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from peewee import IntegrityError
-from src.app.models import CoinModel, DutyModel, Junction
+from src.app.models import Coin, Duty, Junction
 
 api = Flask(__name__)
 
@@ -13,7 +13,7 @@ def create_coin():
         return jsonify({"error": "coin_name is required"}), 400
 
     try:
-        coin = CoinModel.create(
+        coin = Coin.create(
             coin_name=coin_name, 
             is_complete=data.get("is_complete", False)
         )
@@ -28,7 +28,7 @@ def create_coin():
 
 @api.get("/api/coins")
 def get_coin():
-    coins = CoinModel.select()
+    coins = Coin.select()
     response_data = [
         {
             "coin_id": str(coin.coin_id), 
@@ -44,7 +44,7 @@ def update_coin(id):
     data = request.get_json()
     
     try:
-        coin = CoinModel.get(CoinModel.coin_id == id)
+        coin = Coin.get(Coin.coin_id == id)
         
         if "coin_name" in data:
             new_name = data["coin_name"].strip()
@@ -63,7 +63,7 @@ def update_coin(id):
             "is_complete": coin.is_complete
         }), 200
         
-    except CoinModel.DoesNotExist:
+    except Coin.DoesNotExist:
         return jsonify({"error": "Coin not found"}), 404
     except IntegrityError:
         return jsonify({"error": "Coin with this name already exists"}), 409
@@ -72,10 +72,10 @@ def update_coin(id):
 @api.delete("/api/coins/<id>")
 def delete_coin(id):
     try:
-        coin = CoinModel.get(CoinModel.coin_id == id)
+        coin = Coin.get(Coin.coin_id == id)
         coin.delete_instance()
         return '', 204
-    except CoinModel.DoesNotExist:
+    except Coin.DoesNotExist:
         return jsonify({"error": "Coin not found"}), 404
 
 
@@ -84,7 +84,7 @@ def mark_complete(id):
     data = request.get_json()
     
     try:
-        coin = CoinModel.get(CoinModel.coin_id == id)
+        coin = Coin.get(Coin.coin_id == id)
         
         if "is_complete" in data:
             coin.is_complete = data["is_complete"]
@@ -96,7 +96,7 @@ def mark_complete(id):
             "is_complete": coin.is_complete
         }), 200
         
-    except CoinModel.DoesNotExist:
+    except Coin.DoesNotExist:
         return jsonify({"error": "Coin not found"}), 404
 
 
@@ -109,16 +109,16 @@ def link_duty_to_coin(id):
         return jsonify({"error": "duty_id is required"}), 400
         
     try:
-        coin = CoinModel.get(CoinModel.coin_id == id)
-        duty = DutyModel.get(DutyModel.duty_id == duty_id)
+        coin = Coin.get(Coin.coin_id == id)
+        duty = Duty.get(Duty.duty_id == duty_id)
         
         Junction.create(coin_id=coin, duty_id=duty)
         
         return jsonify({"message": "Duty successfully linked to coin"}), 201
         
-    except CoinModel.DoesNotExist:
+    except Coin.DoesNotExist:
         return jsonify({"error": "Coin not found"}), 404
-    except DutyModel.DoesNotExist:
+    except Duty.DoesNotExist:
         return jsonify({"error": "Duty not found"}), 404
     except IntegrityError:
         return jsonify({"error": "This linkage already exists"}), 409

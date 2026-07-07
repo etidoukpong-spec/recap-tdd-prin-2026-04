@@ -1,26 +1,44 @@
-import uuid
+import uuid, os, dotenv
 from peewee import *
-from src.app.config import DB_CONFIG
 
-db = PostgresqlDatabase(**DB_CONFIG)
+dotenv.load_dotenv()
+
+db = PostgresqlDatabase(
+    "etido",
+    user="etido",
+    port=25060,
+    host=os.getenv("DB_HOST"),
+    password=os.getenv("DB_PASSWORD"),
+)
 
 class BaseModel(Model):
-    """A base model that will use our Postgresql database"""
     class Meta:
         database = db
 
-class DutyModel(BaseModel): 
+class Duty(BaseModel): 
     duty_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     duty_name = CharField(unique=True)
     duty_desc = CharField()
 
+    class Meta:
+        schema = 'coins'
+        table_name = 'duty'
+
     
-class CoinModel(BaseModel):
+class Coin(BaseModel):
     coin_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     coin_name = CharField(unique=True)
     is_complete = BooleanField()
 
+    class Meta:
+        schema = 'coins'
+        table_name = 'coin'
+
 class Junction(BaseModel):
     junction_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    duty_id = ForeignKeyField(DutyModel, on_delete="CASCADE")
-    coin_id = ForeignKeyField(CoinModel, on_delete="CASCADE")
+    duty_id = ForeignKeyField(Duty, on_delete="CASCADE")
+    coin_id = ForeignKeyField(Coin, on_delete="CASCADE")
+
+    class Meta:
+        schema = 'coins'
+        table_name = 'coin_duty_junction'
