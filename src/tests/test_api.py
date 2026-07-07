@@ -3,7 +3,7 @@ import pytest
 from src.app.api import *
 from src.app.models import *
 
-MODELS = [DutyModel, CoinModel, Junction]
+MODELS = [Duty, Coin, Junction]
 
 mock_db = SqliteDatabase(':memory:')
 
@@ -24,7 +24,6 @@ def test_user_can_get_a_coin():
         response = client.get("/api/coins")
 
         assert response.status_code == 200
-        # assert coin has the characteristics of a coin 
 
 def test_user_can_create_a_coin():
     with api.test_client() as client:
@@ -103,7 +102,7 @@ def test_user_can_mark_coin_completed():
         assert patch_response.json["is_complete"] == True
 
 def test_user_can_link_duty_to_coin():
-    duty = DutyModel.create(duty_name="Test Duty", duty_desc="A test description")
+    duty = Duty.create(duty_name="Test Duty", duty_desc="A test description")
     
     with api.test_client() as client:
         coin = {"coin_name": "Link Test Coin", "is_complete": False}
