@@ -53,3 +53,45 @@ src/tests/test_duty.py — 79 Stmts | 0 Miss | 100% Cover
 src/tests/test_e2e.py — 26 Stmts | 0 Miss | 100% Cover
 
 TOTAL — 158 Stmts | 0 Miss | 100% Cover
+
+## API
+To run:
+
+```shell
+export FLASK_APP=src.app.api:api
+
+flask run
+```
+then use Postman or Bruno and choose from one of these endpoints.
+
+```js
+    "endpoints": {
+      "create-coin": "/api/coins",
+      "delete-coin": "/api/coins/<id>",
+      "get-coin": "/api/coins",
+      "link-duty-to-coin": "/api/coins/<id>/duties",
+      "mark-complete": "/api/coins/<id>",
+      "update-coin": "/api/coins/<id>"
+```
+
+`get-coin` to copy any ids to use in other queries.
+`create-coin`, `link-duty-to-coin`, `mark-complete` and `update-coin` require payloads.
+In the above order:
+```
+{
+    "coin_name": "Name" # is_complete set to false by default
+}
+
+{
+    "duty_id": # get this from querying the duty table in pgAdmin 4
+}
+
+
+{
+    "is_complete": true
+}
+
+{
+    "coin_name": "NewName"
+}
+```
