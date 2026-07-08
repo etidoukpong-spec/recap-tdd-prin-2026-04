@@ -3,11 +3,13 @@ import json
 from src.app.models import db, Coin, Duty, Junction
 
 def init_db():
-    db.drop_tables([Coin, Duty, Junction], safe=True)
     with open('src/app/seed_data.json') as json_data:
         seed_data = json.load(json_data)
         all_duties = seed_data['duties']
-    db.connect()
+    if db.is_closed():
+        db.connect()
+        
+    db.drop_tables([Coin, Duty, Junction], safe=True)
     db.create_tables([Coin, Duty, Junction], safe=True)
     
     print("Tables created successfully in the 'coins' schema!")
