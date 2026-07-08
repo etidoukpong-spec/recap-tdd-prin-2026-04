@@ -4,9 +4,9 @@ from peewee import *
 dotenv.load_dotenv()
 
 db = PostgresqlDatabase(
-    "etido",
-    user="etido",
-    port=25060,
+    os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    port=os.getenv("DB_PORT"),
     host=os.getenv("DB_HOST"),
     password=os.getenv("DB_PASSWORD"),
 )
