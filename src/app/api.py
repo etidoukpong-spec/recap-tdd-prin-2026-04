@@ -122,3 +122,70 @@ def link_duty_to_coin(id):
         return jsonify({"error": "Duty not found"}), 404
     except IntegrityError:
         return jsonify({"error": "This linkage already exists"}), 409
+    
+@api.post("/api/duties")
+def create_duty():
+    data = request.get_json()
+    duty_name = data.get("duty_name", "").strip()
+    duty_desc = data.get("duty_desc", "").strip()
+    coin_id = data.get("coin_id", "")
+
+    if not duty_name:
+        return jsonify({"error": "duty_name is required"}), 400
+
+    try:
+        coin = Coin.get(Coin.coin_id == coin_id)
+        duty = Duty.create(
+            duty_name=duty_name, 
+            duty_desc=duty_desc
+        )
+
+        Junction.create(coin_id=coin, duty_id=duty)
+
+        return jsonify({"message": "Duty successfully created and linked to coin"}), 201
+    except Coin.DoesNotExist:
+        return jsonify({"error": "Coin not found"}), 404
+    except IntegrityError:
+        return jsonify({"error": "This duty or linkage already exists"}), 409
+
+@api.get("/api/duties")
+def get_all_duties():
+    duties = Duty.select()
+    response_data = [
+        {
+            "duty_id": str(duty.duty_id),
+            "duty_name": duty.duty_name,
+            "duty_desc": duty.duty_desc
+        }
+        for duty in duties
+    ]
+    return jsonify(response_data), 200
+
+@api.get("/api/duties/<id>")
+def get_single_duty(id):
+    try:
+        duty = Duty.get(Duty.duty_id == id)
+        response_data = {
+            "duty_id": str(duty.duty_id),
+            "duty_name": duty.duty_name,
+            "duty_desc": duty.duty_desc
+        }
+        return jsonify(response_data), 200
+    except Duty.DoesNotExist:
+        return jsonify({"error": "Duty not found"}), 404
+    
+@api.put("/api/duties/<id>")
+def update_duty_desc(id):
+    data = request.get_json()
+    new_desc = data.get("duty_desc")
+
+    if not new_desc:
+        return jsonify({"error": "duty_desc is required"}), 400
+    
+    try:
+        duty = Duty.get(Duty.duty_id == id)
+        duty.duty_desc = new_desc
+        duty.save()
+        return jsonify({"message": "Duty description successfully updated"}), 200
+    except Duty.DoesNotExist:
+        return jsonify({"error": "Duty not found"}), 404

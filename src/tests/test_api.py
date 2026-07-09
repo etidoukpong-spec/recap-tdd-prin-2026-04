@@ -115,3 +115,126 @@ def test_user_can_link_duty_to_coin():
         link_response = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
 
         assert link_response.status_code == 201
+
+
+def test_user_cannot_patch_a_nonexistent_coin():
+    with api.test_client() as client:
+        coin_uuid = uuid.uuid4()
+        response = client.patch(f"/api/coins/{coin_uuid}", json={"is_complete": True})
+        assert response.status_code == 404
+
+def test_user_cannot_update_a_coin_with_a_duplicate_name():
+    with api.test_client() as client:
+        client.post("/api/coins", json={"coin_name": "Coin Alpha"})
+        response = client.post("/api/coins", json={"coin_name": "Coin Beta"})
+        coin_uuid = response.json["coin_id"]
+
+        response2 = client.put(f"/api/coins/{coin_uuid}", json={"coin_name": "Coin Alpha"})
+        assert response2.status_code == 409
+
+def test_user_cannot_update_a_coin_with_an_empty_name():
+    with api.test_client() as client:
+        response = client.post("/api/coins", json={"coin_name": "Valid Coin"})
+        coin_uuid = response.json["coin_id"]
+
+        response2 = client.put(f"/api/coins/{coin_uuid}", json={"coin_name": "   "})
+        assert response2.status_code == 400
+
+def test_user_cannot_link_duty_without_duty_id():
+    with api.test_client() as client:
+        coin_uuid = uuid.uuid4()
+        response = client.post(f"/api/coins/{coin_uuid}/duties", json={})
+        assert response.status_code == 400
+
+def test_user_cannot_link_duty_to_a_nonexistent_coin():
+    duty = Duty.create(duty_name="Test Duty", duty_desc="A test description")
+    with api.test_client() as client:
+        coin_uuid = uuid.uuid4()
+        link_data = {"duty_id": str(duty.duty_id)}
+        response = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
+        assert response.status_code == 404
+
+def test_user_cannot_link_a_nonexistent_duty_to_a_coin():
+    with api.test_client() as client:
+        coin = {"coin_name": "Link Test Coin", "is_complete": False}
+        response = client.post("/api/coins", json=coin)
+        coin_uuid = response.json["coin_id"]
+
+        link_data = {"duty_id": str(uuid.uuid4())}
+        response2 = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
+        assert response2.status_code == 404
+
+def test_user_cannot_create_a_duplicate_linkage():
+    duty = Duty.create(duty_name="Test Duty", duty_desc="A test description")
+    with api.test_client() as client:
+        coin = {"coin_name": "Duplicate Link Coin", "is_complete": False}
+        response = client.post("/api/coins", json=coin)
+        coin_uuid = response.json["coin_id"]
+
+        link_data = {"duty_id": str(duty.duty_id)}
+        client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
+        
+        response2 = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
+        assert response2.status_code == 409
+
+def test_user_can_create_a_duty():
+    with api.test_client() as client:
+        coin = {"coin_name": "Duty Parent Coin", "is_complete": False}
+        response = client.post("/api/coins", json=coin)
+        coin_uuid = response.json["coin_id"]
+
+        duty = {"duty_name": "Fresh Duty", "duty_desc": "Description", "coin_id": coin_uuid}
+        response2 = client.post("/api/duties", json=duty)
+        assert response2.status_code == 201
+
+def test_user_cannot_omit_duty_name():
+    with api.test_client() as client:
+        duty = {"duty_name": "", "duty_desc": "Description"}
+        response = client.post("/api/duties", json=duty)
+        assert response.status_code == 400
+
+def test_user_cannot_create_duty_with_a_nonexistent_coin():
+    with api.test_client() as client:
+        duty = {"duty_name": "Fresh Duty", "coin_id": str(uuid.uuid4())}
+        response = client.post("/api/duties", json=duty)
+        assert response.status_code == 404
+
+def test_user_can_get_all_duties():
+    Duty.create(duty_name="Duty 1", duty_desc="Desc 1")
+    Duty.create(duty_name="Duty 2", duty_desc="Desc 2")
+    with api.test_client() as client:
+        response = client.get("/api/duties")
+        assert response.status_code == 200
+        assert len(response.json) == 2
+
+def test_user_can_get_a_single_duty():
+    duty = Duty.create(duty_name="Unique Duty", duty_desc="Desc")
+    with api.test_client() as client:
+        response = client.get(f"/api/duties/{duty.duty_id}")
+        assert response.status_code == 200
+        assert response.json["duty_name"] == "Unique Duty"
+
+def test_user_cannot_get_a_nonexistent_duty():
+    with api.test_client() as client:
+        response = client.get(f"/api/duties/{uuid.uuid4()}")
+        assert response.status_code == 404
+
+def test_user_can_update_a_duty_description():
+    duty = Duty.create(duty_name="Duty to Update", duty_desc="Old Desc")
+    with api.test_client() as client:
+        patch_data = {"duty_desc": "New Desc"}
+        response = client.put(f"/api/duties/{duty.duty_id}", json=patch_data)
+        assert response.status_code == 200
+        
+        updated_duty = Duty.get(Duty.duty_id == duty.duty_id)
+        assert updated_duty.duty_desc == "New Desc"
+
+def test_user_cannot_update_a_duty_description_with_empty_value():
+    with api.test_client() as client:
+        response = client.put(f"/api/duties/{uuid.uuid4()}", json={"duty_desc": ""})
+        assert response.status_code == 400
+
+def test_user_cannot_update_description_of_a_nonexistent_duty():
+    with api.test_client() as client:
+        response = client.put(f"/api/duties/{uuid.uuid4()}", json={"duty_desc": "Some context"})
+        assert response.status_code == 404
