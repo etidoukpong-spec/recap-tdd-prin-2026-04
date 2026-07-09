@@ -1,18 +1,11 @@
-import uuid, os, dotenv
+import uuid
 from peewee import *
-
-dotenv.load_dotenv()
-
-db = PostgresqlDatabase(
-    os.getenv("DB_NAME"),
-    user=os.getenv("DB_USER"),
-    port=os.getenv("DB_PORT"),
-    host=os.getenv("DB_HOST"),
-    password=os.getenv("DB_PASSWORD"),
-)
+from src.app.config import test_mode
+from src.app.database import db
 
 class BaseModel(Model):
     class Meta:
+        schema = "test" if test_mode else "coins"
         database = db
 
 class Duty(BaseModel): 
@@ -21,7 +14,6 @@ class Duty(BaseModel):
     duty_desc = CharField()
 
     class Meta:
-        schema = 'coins'
         table_name = 'duty'
 
     
@@ -31,7 +23,6 @@ class Coin(BaseModel):
     is_complete = BooleanField(default=False)
 
     class Meta:
-        schema = 'coins'
         table_name = 'coin'
 
 class Junction(BaseModel):
@@ -40,5 +31,4 @@ class Junction(BaseModel):
     coin_id = ForeignKeyField(Coin, on_delete="CASCADE")
 
     class Meta:
-        schema = 'coins'
         table_name = 'coin_duty_junction'

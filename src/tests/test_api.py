@@ -1,22 +1,24 @@
-import pytest
+import os, uuid, pytest
 
-from src.app.api import *
-from src.app.models import *
+os.environ["TESTING"] = "True"
+
+from src.app.api import api
+from src.app.models import Coin, Duty, Junction
+from src.app.database import db, init_db
 
 MODELS = [Duty, Coin, Junction]
 
-mock_db = SqliteDatabase(':memory:')
-
 @pytest.fixture(autouse=True)
-def create_mock_db():
-    mock_db.bind(MODELS, bind_refs=False, bind_backrefs=False)
-    mock_db.connect()
-    mock_db.create_tables(MODELS)
+def setup_test_db():
+    init_db()
+    db.connect(reuse_if_open=True)
+    db.drop_tables(MODELS, safe=True)
+    db.create_tables(MODELS, safe=True)
 
     yield
 
-    mock_db.drop_tables(MODELS)
-    mock_db.close()
+    db.drop_tables(MODELS, safe=True)
+    db.close()
     
 
 def test_user_can_get_a_coin():
