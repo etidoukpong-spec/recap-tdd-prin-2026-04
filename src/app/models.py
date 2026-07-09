@@ -27,8 +27,11 @@ class Coin(BaseModel):
 
 class Junction(BaseModel):
     junction_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    duty_id = ForeignKeyField(Duty, on_delete="CASCADE")
-    coin_id = ForeignKeyField(Coin, on_delete="CASCADE")
+    duty_id = ForeignKeyField(Duty, backref="coins", on_delete="CASCADE", on_update="CASCADE")
+    coin_id = ForeignKeyField(Coin, backref="duties", on_delete="CASCADE", on_update="CASCADE")
 
     class Meta:
         table_name = 'coin_duty_junction'
+        indexes = (
+            (('coin_id', 'duty_id'), True),
+        )
