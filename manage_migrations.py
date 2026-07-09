@@ -20,7 +20,7 @@ def main():
     db.execute_sql("CREATE SCHEMA IF NOT EXISTS coins;")
     db.execute_sql("SET search_path TO coins;")
 
-    router = Router(db, migrate_dir='src/migrations', ignore=['BaseModel'])
+    router = Router(db, migrate_dir='src/migrations', ignore=['basemodel', 'base_model'])
 
     if command == "create":
         if len(sys.argv) < 3:
