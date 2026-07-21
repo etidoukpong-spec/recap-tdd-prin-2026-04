@@ -19,7 +19,7 @@ The terraform is made up of the initialisation files, 6 files I created and a sh
 | File Name | Purpose / Contents |
 | :--- | :--- |
 | `terraform.tf` | Contains the `terraform {}` block and a nested backend block to connect the remote state file. |
-| `main.tf` | Contains the `provider {}` block and the S3 resources. |
+| `main.tf` | Contains the `provider {}` block. |
 | `iam.tf` | Contains the IAM roles and policies needed for GitHub and ECS to create the service. |
 | `network.tf` | Contains the minimal network configuration required for Express. |
 | `ecs.tf` | Contains the necessary Elastic Container Registry (ECR), the ECS cluster, and the `clean_stale_service` dependency. |
