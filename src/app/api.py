@@ -4,6 +4,10 @@ from src.app.models import Coin, Duty, Junction
 
 api = Flask(__name__)
 
+@api.get("/")
+def health():
+    return "Healthy"
+
 @api.post("/api/coins")
 def create_coin():
     data = request.get_json()
