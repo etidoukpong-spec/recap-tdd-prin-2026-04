@@ -1,9 +1,9 @@
 import pytest
 from urllib.parse import urlparse
-from src.app.app import app
+from src.app.api import api
 from playwright.sync_api import Page, expect
 
-test_app = app.test_client()
+test_api = api.test_client()
 
 @pytest.fixture(autouse=True)
 def mock_request(page):
@@ -12,14 +12,14 @@ def mock_request(page):
         method = route.request.method
 
         if method == "POST":
-            response = test_app.post(
+            response = test_api.post(
                 path, 
                 data=route.request.post_data,
                 headers=dict(route.request.headers)
                 )
 
         else:
-            response = test_app.get(path)
+            response = test_api.get(path)
         route.fulfill(
             body=response.data,
             headers=dict(response.headers),
