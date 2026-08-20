@@ -36,7 +36,7 @@ def test_user_can_update_a_coin_name():
     with api.test_client() as client:
         coin = {"coin_name": "Old Coin", "is_complete": False}
         response = client.post("/api/coins", json=coin) 
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         new_data = {"coin_name": "New Coin"}
         response = client.patch(f"/api/coins/{coin_uuid}", json=new_data)
@@ -47,7 +47,7 @@ def test_user_can_delete_a_coin():
     with api.test_client() as client:
         coin = {"coin_name": "Coin to Delete", "is_complete": False}
         response = client.post("/api/coins", json=coin)
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         response = client.delete(f"/api/coins/{coin_uuid}")
 
@@ -89,21 +89,21 @@ def test_user_can_mark_coin_completed():
     with api.test_client() as client:
         coin = {"coin_name": "Completion Test Coin", "is_complete": False}
         response = client.post("/api/coins", json=coin)
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         new_data = {"is_complete": True}
         new_response = client.patch(f"/api/coins/{coin_uuid}", json=new_data)
         completed_coin = new_response.json
 
         assert new_response.status_code == 200
-        assert completed_coin["is_complete"] == True
+        assert completed_coin["is_complete"] == True # type: ignore
 
 def test_user_can_link_duty_to_coin():
     with api.test_client() as client:
         duty = Duty.create(duty_name="Test Duty", duty_desc="Test Desc")
         coin = {"coin_name": "Link Test Coin", "is_complete": False}
         response = client.post("/api/coins", json=coin)
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         link_data = {"duty_id": str(duty.duty_id)}
         link_response = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
@@ -121,7 +121,7 @@ def test_user_cannot_update_a_coin_with_a_duplicate_name():
         client.post("/api/coins", json={"coin_name": "Coin Alpha", "is_complete": False})
 
         response = client.post("/api/coins", json={"coin_name": "Coin Beta", "is_complete": False})
-        coin_2_uuid = response.json["coin_id"]
+        coin_2_uuid = response.json["coin_id"] # type: ignore
 
         new_data = {"coin_name": "Coin Alpha"}
         new_response = client.patch(f"/api/coins/{coin_2_uuid}", json=new_data)
@@ -131,7 +131,7 @@ def test_user_cannot_update_a_coin_with_a_duplicate_name():
 def test_user_cannot_update_a_coin_with_an_empty_name():
     with api.test_client() as client:
         response = client.post("/api/coins", json={"coin_name": "Old Coin"})
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         new_data = {"coin_name": ""}
         new_response = client.patch(f"/api/coins/{coin_uuid}", json=new_data)
@@ -155,7 +155,7 @@ def test_user_cannot_link_a_nonexistent_duty_to_a_coin():
     with api.test_client() as client:
         coin = {"coin_name": "Link Test Coin", "is_complete": False}
         response = client.post("/api/coins", json=coin)
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         link_data = {"duty_id": str(uuid.uuid4())}
         response2 = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
@@ -166,7 +166,7 @@ def test_user_cannot_create_a_duplicate_linkage():
         duty = Duty.create(duty_name="Test Duty", duty_desc="Test Desc")
         coin = {"coin_name": "Duplicate Link Coin", "is_complete": False}
         response = client.post("/api/coins", json=coin)
-        coin_uuid = response.json["coin_id"]
+        coin_uuid = response.json["coin_id"] # type: ignore
 
         link_data = {"duty_id": str(duty.duty_id)}
         client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
@@ -178,7 +178,7 @@ def test_user_can_create_a_duty():
     with api.test_client() as client:
         coin = {"coin_name": "Duty Parent Coin", "is_complete": False}
         coin_response = client.post("/api/coins", json=coin)
-        coin_uuid = coin_response.json["coin_id"]
+        coin_uuid = coin_response.json["coin_id"] # type: ignore
 
         duty = {"duty_name": "New Duty", "duty_desc": "New Desc", "coin_id": coin_uuid}
         duty_response = client.post("/api/duties", json=duty)
@@ -204,14 +204,14 @@ def test_user_can_get_all_duties():
         response = client.get("/api/duties")
 
         assert response.status_code == 200
-        assert len(response.json) == 2
+        assert len(response.json) == 2 # type: ignore
 
 def test_user_can_get_a_single_duty():
     duty = Duty.create(duty_name="Unique Duty", duty_desc="Desc")
     with api.test_client() as client:
         response = client.get(f"/api/duties/{duty.duty_id}")
         assert response.status_code == 200
-        assert response.json["duty_name"] == "Unique Duty"
+        assert response.json["duty_name"] == "Unique Duty" # type: ignore
 
 def test_user_cannot_get_a_nonexistent_duty():
     with api.test_client() as client:
@@ -245,7 +245,7 @@ def test_user_cannot_create_duty_with_empty_description():
     with api.test_client() as client:
         coin = {"coin_name": "Duty Parent Coin", "is_complete": False}
         coin_response = client.post("/api/coins", json=coin)
-        coin_uuid = coin_response.json["coin_id"]
+        coin_uuid = coin_response.json["coin_id"] # type: ignore
 
         duty = {"duty_name": "New Duty", "duty_desc": "", "coin_id": coin_uuid}
         duty_response = client.post("/api/duties", json=duty)
