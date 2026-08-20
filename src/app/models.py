@@ -10,8 +10,8 @@ class BaseModel(Model):
 
 class Duty(BaseModel): 
     duty_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    duty_name = CharField(unique=True)
-    duty_desc = CharField()
+    duty_name = CharField(unique=True, null=False)
+    duty_desc = CharField(null=False)
 
     class Meta:
         table_name = 'duty'
@@ -19,7 +19,7 @@ class Duty(BaseModel):
     
 class Coin(BaseModel):
     coin_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
-    coin_name = CharField(unique=True)
+    coin_name = CharField(unique=True, null=False)
     is_complete = BooleanField(default=False)
 
     class Meta:
