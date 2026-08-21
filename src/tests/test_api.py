@@ -20,6 +20,25 @@ def setup_test_db():
     db.drop_tables(MODELS, safe=True)
     db.close()
 
+@pytest.fixture()
+def linked_data_setup():
+    coin_a = Coin.create(coin_name="Coin A", is_complete=False)
+    coin_b = Coin.create(coin_name="Coin B", is_complete=True)
+    
+    duty_1 = Duty.create(duty_name="Duty 1", duty_desc="First duty")
+    duty_2 = Duty.create(duty_name="Duty 2", duty_desc="Shared duty")
+    
+    Junction.create(coin_id=coin_a, duty_id=duty_1)
+    Junction.create(coin_id=coin_a, duty_id=duty_2)
+    Junction.create(coin_id=coin_b, duty_id=duty_2)
+    
+    return {
+        "coin_a": coin_a, 
+        "coin_b": coin_b, 
+        "duty_1": duty_1, 
+        "duty_2": duty_2
+    }
+
 
 class TestCoinAPI:
     # --- CREATE ---
@@ -48,6 +67,23 @@ class TestCoinAPI:
         with api.test_client() as client:
             response = client.get("/api/coins")
             assert response.status_code == 200
+
+    def test_get_coins_master_view_includes_linked_duties(self, linked_data_setup):
+        with api.test_client() as client:
+            response = client.get("/api/coins")
+            assert response.status_code == 200
+            data = response.json
+
+            assert len(data) == 2 # type: ignore
+            
+            coin_a_data = next(coin for coin in data if coin["coin_name"] == "Coin A") # type: ignore
+            
+            assert "duties" in coin_a_data
+            assert len(coin_a_data["duties"]) == 2
+            
+            duty_names = [d["duty_name"] for d in coin_a_data["duties"]]
+            assert "Duty 1" in duty_names
+            assert "Duty 2" in duty_names
 
     # --- UPDATE ---
     def test_user_can_update_a_coin_name(self):

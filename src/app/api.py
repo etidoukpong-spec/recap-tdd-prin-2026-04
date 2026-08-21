@@ -31,15 +31,26 @@ def create_coin():
         return jsonify({"error": "Coin with this name already exists"}), 409
 
 @api.get("/api/coins")
-def get_coin():
+def get_coins():
     coins = Coin.select()
-    response_data = [
-        {
+    response_data = []
+    
+    for coin in coins:
+        linked_duties = Duty.select().join(Junction).where(Junction.coin_id == coin.coin_id)
+        
+        response_data.append({
             "coin_id": str(coin.coin_id), 
             "coin_name": coin.coin_name, 
-            "is_complete": coin.is_complete
-        } for coin in coins
-    ]
+            "is_complete": coin.is_complete,
+            "duties": [
+                {
+                    "duty_id": str(duty.duty_id),
+                    "duty_name": duty.duty_name,
+                    "duty_desc": duty.duty_desc
+                } for duty in linked_duties
+            ]
+        })
+        
     return jsonify(response_data), 200
 
 @api.patch("/api/coins/<id>")
