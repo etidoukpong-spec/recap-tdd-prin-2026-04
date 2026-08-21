@@ -212,6 +212,22 @@ class TestDutyAPI:
             assert response.status_code == 200
             assert response.json["duty_name"] == "Unique Duty" # type: ignore
 
+    def test_get_single_duty_detail_view_includes_linked_coins(self, linked_data_setup):
+            target_duty = linked_data_setup["duty_2"] 
+
+            with api.test_client() as client:
+                response = client.get(f"/api/duties/{target_duty.duty_id}")
+                assert response.status_code == 200
+                data = response.json
+
+                assert data["duty_name"] == "Duty 2" # type: ignore
+                assert "coins" in data # type: ignore
+                assert len(data["coins"]) == 2 # type: ignore
+                
+                coin_names = [coin["coin_name"] for coin in data["coins"]] # type: ignore
+                assert "Coin A" in coin_names
+                assert "Coin B" in coin_names
+
     def test_user_cannot_get_a_nonexistent_duty(self):
         with api.test_client() as client:
             response = client.get(f"/api/duties/{uuid.uuid4()}")

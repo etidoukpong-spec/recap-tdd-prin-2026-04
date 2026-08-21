@@ -188,10 +188,20 @@ def get_all_duties():
 def get_single_duty(id):
     try:
         duty = Duty.get(Duty.duty_id == id)
+
+        linked_coins = Coin.select().join(Junction).where(Junction.duty_id == duty.duty_id)
+
         response_data = {
             "duty_id": str(duty.duty_id),
             "duty_name": duty.duty_name,
-            "duty_desc": duty.duty_desc
+            "duty_desc": duty.duty_desc,
+            "coins": [
+                {
+                    "coin_id": str(coin.coin_id),
+                    "coin_name": coin.coin_name,
+                    "is_complete": coin.is_complete
+                } for coin in linked_coins
+            ]
         }
         return jsonify(response_data), 200
     except DoesNotExist:
