@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from peewee import IntegrityError, DoesNotExist
 from src.app.models import Coin, Duty, Junction
+from src.app.utils import format_coin_response, format_duty_response
 
 api = Flask(__name__)
 
@@ -21,11 +22,7 @@ def create_coin():
             coin_name=coin_name, 
             is_complete=data.get("is_complete", False)
         )
-        return jsonify({
-            "coin_id": str(coin.coin_id), 
-            "coin_name": coin.coin_name, 
-            "is_complete": coin.is_complete
-        }), 201
+        return jsonify(format_coin_response(coin)), 201
     
     except IntegrityError:
         return jsonify({"error": "Coin with this name already exists"}), 409
@@ -37,19 +34,11 @@ def get_coins():
     
     for coin in coins:
         linked_duties = Duty.select().join(Junction).where(Junction.coin_id == coin.coin_id)
+
+        coin_data = format_coin_response(coin)
+        coin_data["duties"] = [format_duty_response(duty) for duty in linked_duties]
         
-        response_data.append({
-            "coin_id": str(coin.coin_id), 
-            "coin_name": coin.coin_name, 
-            "is_complete": coin.is_complete,
-            "duties": [
-                {
-                    "duty_id": str(duty.duty_id),
-                    "duty_name": duty.duty_name,
-                    "duty_desc": duty.duty_desc
-                } for duty in linked_duties
-            ]
-        })
+        response_data.append(coin_data)
         
     return jsonify(response_data), 200
 
@@ -93,11 +82,7 @@ def update_coin(id):
             return jsonify({"error": "Coin with this name already exists"}), 409
 
     else:        
-        return jsonify({
-            "coin_id": str(coin.coin_id), 
-            "coin_name": coin.coin_name, 
-            "is_complete": coin.is_complete
-        }), 200   
+        return jsonify(format_coin_response(coin)), 200   
 
 @api.delete("/api/coins/<id>")
 def delete_coin(id):
@@ -174,14 +159,7 @@ def create_duty():
 @api.get("/api/duties")
 def get_all_duties():
     duties = Duty.select()
-    response_data = [
-        {
-            "duty_id": str(duty.duty_id),
-            "duty_name": duty.duty_name,
-            "duty_desc": duty.duty_desc
-        }
-        for duty in duties
-    ]
+    response_data = [format_duty_response(duty) for duty in duties]
     return jsonify(response_data), 200
 
 @api.get("/api/duties/<id>")
@@ -191,19 +169,10 @@ def get_single_duty(id):
 
         linked_coins = Coin.select().join(Junction).where(Junction.duty_id == duty.duty_id)
 
-        response_data = {
-            "duty_id": str(duty.duty_id),
-            "duty_name": duty.duty_name,
-            "duty_desc": duty.duty_desc,
-            "coins": [
-                {
-                    "coin_id": str(coin.coin_id),
-                    "coin_name": coin.coin_name,
-                    "is_complete": coin.is_complete
-                } for coin in linked_coins
-            ]
-        }
-        return jsonify(response_data), 200
+        duty_data = format_duty_response(duty)
+        duty_data["coins"] = [format_coin_response(coin) for coin in linked_coins] # type: ignore
+
+        return jsonify(duty_data), 200
     except DoesNotExist:
         return jsonify({"error": "Duty not found"}), 404
     
