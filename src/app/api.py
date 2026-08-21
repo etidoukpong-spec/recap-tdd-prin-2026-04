@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from peewee import IntegrityError, DoesNotExist
+from src.app.database import db
 from src.app.models import Coin, Duty, Junction
 from src.app.utils import format_coin_response, format_duty_response
 
@@ -143,12 +144,13 @@ def create_duty():
         return jsonify({"error": "Coin not found"}), 404
     
     try:
-        duty = Duty.create(
-            duty_name=duty_name, 
-            duty_desc=duty_desc
-        )
+        with db.atomic():
+            duty = Duty.create(
+                duty_name=duty_name, 
+                duty_desc=duty_desc
+            )
 
-        Junction.create(coin_id=coin, duty_id=duty)
+            Junction.create(coin_id=coin, duty_id=duty)
 
     except IntegrityError:
         return jsonify({"error": "This duty or linkage already exists"}), 409

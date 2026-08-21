@@ -1,3 +1,4 @@
+from peewee import IntegrityError
 import os, uuid, pytest
 
 os.environ["TESTING"] = "True"
@@ -194,6 +195,29 @@ class TestDutyAPI:
             duty = {"duty_name": "New Duty", "duty_desc": "Desc", "coin_id": str(uuid.uuid4())}
             response = client.post("/api/duties", json=duty)
             assert response.status_code == 404
+
+    def test_failed_linkage_rolls_back_duty_creation(self, mocker):
+        with api.test_client() as client:
+            coin = {"coin_name": "Rollback Coin", "is_complete": False}
+            coin_response = client.post("/api/coins", json=coin)
+            coin_uuid = coin_response.json["coin_id"] # type: ignore
+
+            duty_payload = {
+                "duty_name": "Doomed Duty", 
+                "duty_desc": "Will be rolled back", 
+                "coin_id": coin_uuid
+            }
+
+            initial_duty_count = Duty.select().count()
+
+            mocker.patch('src.app.api.Junction.create', side_effect=IntegrityError("Mocked failure"))
+
+            response = client.post("/api/duties", json=duty_payload)
+
+            assert response.status_code == 409
+
+            final_duty_count = Duty.select().count()
+            assert final_duty_count == initial_duty_count
 
     # --- READ ---
     def test_user_can_get_all_duties(self):
