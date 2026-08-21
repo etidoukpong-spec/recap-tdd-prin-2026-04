@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from peewee import IntegrityError, DoesNotExist
 from src.app.database import db
-from src.app.models import Coin, Duty, Junction
+from src.app.models import Coin, Duty, Junction, RequestLog
 from src.app.utils import format_coin_response, format_duty_response
 
 api = Flask(__name__)
@@ -193,3 +193,39 @@ def update_duty_desc(id):
     
     except DoesNotExist:
         return jsonify({"error": "Duty not found"}), 404
+
+@api.get("/api/audit")
+def get_audit_logs():
+    logs = (
+        RequestLog.select()
+        .order_by(RequestLog.timestamp.desc())
+        .limit(100)
+    )
+
+    response_data = [
+        {
+            "log_id": str(log.log_id),
+            "method": log.method,
+            "path": log.path,
+            "ip_address": log.ip_address,
+            "status_code": log.status_code,
+            "timestamp": log.timestamp,
+        }
+        for log in logs
+    ]
+
+    return jsonify(response_data), 200
+
+@api.after_request
+def log_request(response):
+    try:
+        RequestLog.create(
+            method=request.method,
+            path=request.path,
+            ip_address=request.remote_addr or "127.0.0.1",
+            status_code=response.status_code
+        )
+    except Exception:
+        pass
+        
+    return response

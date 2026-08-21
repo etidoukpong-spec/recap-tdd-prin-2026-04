@@ -4,10 +4,10 @@ import os, uuid, pytest
 os.environ["TESTING"] = "True"
 
 from src.app.api import api
-from src.app.models import Coin, Duty, Junction
+from src.app.models import Coin, Duty, Junction, RequestLog
 from src.app.database import db, init_db
 
-MODELS = [Duty, Coin, Junction]
+MODELS = [Duty, Coin, Junction, RequestLog]
 
 @pytest.fixture(autouse=True)
 def setup_test_db():
@@ -278,6 +278,7 @@ class TestDutyAPI:
             response = client.patch(f"/api/duties/{uuid.uuid4()}", json=new_data)
             assert response.status_code == 404
 
+
 class TestCoinDutyLinkAPI:
     # --- CREATE (Linkages only expose a create endpoint in these tests) ---
     def test_user_can_link_duty_to_coin(self):
@@ -327,3 +328,31 @@ class TestCoinDutyLinkAPI:
             
             response2 = client.post(f"/api/coins/{coin_uuid}/duties", json=link_data)
             assert response2.status_code == 409
+
+
+class TestAuditAPI:
+    def test_system_records_incoming_http_requests(self):
+        with api.test_client() as client:
+            client.get("/api/coins")
+
+            logs = list(RequestLog.select())
+
+            assert len(logs) == 1
+            assert logs[0].method == "GET" # type: ignore
+            assert logs[0].path == "/api/coins" # type: ignore
+            assert logs[0].status_code == 200 # type: ignore
+
+    def test_audit_dashboard_returns_recent_requests(self):
+        with api.test_client() as client:
+            client.get("/")
+            client.get("/api/coins")
+
+            response = client.get("/api/audit")
+            assert response.status_code == 200
+
+            data = response.json
+            assert len(data) >= 2  # type: ignore
+            assert "method" in data[0]  # type: ignore
+            assert "path" in data[0]  # type: ignore
+            assert "timestamp" in data[0]  # type: ignore
+            assert "ip_address" in data[0]  # type: ignore

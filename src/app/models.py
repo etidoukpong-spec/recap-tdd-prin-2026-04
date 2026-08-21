@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from peewee import *
 from src.app.config import test_mode
@@ -7,6 +8,7 @@ class BaseModel(Model):
     class Meta:
         schema = "test" if test_mode else "coins"
         database = db
+
 
 class Duty(BaseModel): 
     duty_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
@@ -25,6 +27,7 @@ class Coin(BaseModel):
     class Meta:
         table_name = 'coin'
 
+
 class Junction(BaseModel):
     junction_id = UUIDField(unique=True, primary_key=True, default=uuid.uuid4)
     duty_id = ForeignKeyField(Duty, backref="coins", on_delete="CASCADE", on_update="CASCADE")
@@ -35,3 +38,12 @@ class Junction(BaseModel):
         indexes = (
             (('coin_id', 'duty_id'), True),
         )
+
+
+class RequestLog(BaseModel):
+    log_id = UUIDField(primary_key=True, default=uuid.uuid4)
+    method = CharField()
+    path = CharField()
+    ip_address = CharField()
+    status_code = IntegerField()
+    timestamp = DateTimeField(default=datetime.datetime.now)
