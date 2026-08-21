@@ -220,37 +220,34 @@ class TestDutyAPI:
             assert final_duty_count == initial_duty_count
 
     # --- READ ---
-    def test_user_can_get_all_duties(self):
+    def test_user_can_get_all_duties(self, linked_data_setup):
         with api.test_client() as client:
-            Duty.create(duty_name="Duty 1", duty_desc="Desc 1")
-            Duty.create(duty_name="Duty 2", duty_desc="Desc 2")
-
             response = client.get("/api/duties")
             assert response.status_code == 200
-            assert len(response.json) == 2 # type: ignore
+            assert len(response.json) == 2  # type: ignore
 
-    def test_user_can_get_a_single_duty(self):
-        duty = Duty.create(duty_name="Unique Duty", duty_desc="Desc")
+    def test_user_can_get_a_single_duty(self, linked_data_setup):
+        duty = linked_data_setup["duty_1"]
         with api.test_client() as client:
             response = client.get(f"/api/duties/{duty.duty_id}")
             assert response.status_code == 200
-            assert response.json["duty_name"] == "Unique Duty" # type: ignore
+            assert response.json["duty_name"] == "Duty 1"  # type: ignore
 
     def test_get_single_duty_detail_view_includes_linked_coins(self, linked_data_setup):
-            target_duty = linked_data_setup["duty_2"] 
+        target_duty = linked_data_setup["duty_2"]
 
-            with api.test_client() as client:
-                response = client.get(f"/api/duties/{target_duty.duty_id}")
-                assert response.status_code == 200
-                data = response.json
+        with api.test_client() as client:
+            response = client.get(f"/api/duties/{target_duty.duty_id}")
+            assert response.status_code == 200
+            data = response.json
 
-                assert data["duty_name"] == "Duty 2" # type: ignore
-                assert "coins" in data # type: ignore
-                assert len(data["coins"]) == 2 # type: ignore
-                
-                coin_names = [coin["coin_name"] for coin in data["coins"]] # type: ignore
-                assert "Coin A" in coin_names
-                assert "Coin B" in coin_names
+            assert data["duty_name"] == "Duty 2"  # type: ignore
+            assert "coins" in data  # type: ignore
+            assert len(data["coins"]) == 2  # type: ignore
+
+            coin_names = [coin["coin_name"] for coin in data["coins"]]  # type: ignore
+            assert "Coin A" in coin_names
+            assert "Coin B" in coin_names
 
     def test_user_cannot_get_a_nonexistent_duty(self):
         with api.test_client() as client:
@@ -258,19 +255,19 @@ class TestDutyAPI:
             assert response.status_code == 404
 
     # --- UPDATE ---
-    def test_user_can_update_a_duty_description(self):
+    def test_user_can_update_a_duty_description(self, linked_data_setup):
+        duty = linked_data_setup["duty_1"]
         with api.test_client() as client:
-            duty = Duty.create(duty_name="Duty to Update", duty_desc="Old Desc")
             new_data = {"duty_desc": "New Desc"}
             response = client.patch(f"/api/duties/{duty.duty_id}", json=new_data)
             assert response.status_code == 200
-            
+
             updated_duty = Duty.get(Duty.duty_id == duty.duty_id)
             assert updated_duty.duty_desc == "New Desc"
 
-    def test_user_cannot_update_a_duty_description_with_empty_value(self):
+    def test_user_cannot_update_a_duty_description_with_empty_value(self, linked_data_setup):
+        duty = linked_data_setup["duty_1"]
         with api.test_client() as client:
-            duty = Duty.create(duty_name="Duty to Update", duty_desc="Old Desc")
             new_data = {"duty_desc": ""}
             response = client.patch(f"/api/duties/{duty.duty_id}", json=new_data)
             assert response.status_code == 400
@@ -280,7 +277,6 @@ class TestDutyAPI:
             new_data = {"duty_desc": "New Desc"}
             response = client.patch(f"/api/duties/{uuid.uuid4()}", json=new_data)
             assert response.status_code == 404
-
 
 class TestCoinDutyLinkAPI:
     # --- CREATE (Linkages only expose a create endpoint in these tests) ---
